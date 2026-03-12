@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <list>
 // 二分查找
 bool binarySearch(std::vector<int> &arr, int target)
 {
@@ -24,13 +25,18 @@ bool binarySearch(std::vector<int> &arr, int target)
     }
     return false;
 }
-// 归并排序
-void mergeSort(std::vector<int> &arr, int left, int mid, int right)
+// 数组归并排序，典型的分治思想
+// 分解（Divide）：将待排序的数组分成两个子数组，每个子数组包含大约一半的元素。
+// 解决（Conquer）：递归地对每个子数组进行排序。
+// 合并（Combine）：将两个已排序的子数组合并成一个有序的数组。
+template<typename T>
+void mergeSort(std::vector<T> &arr, int left, int mid, int right)
 {
     int leftArrSize=mid-left+1;
     int rightArrSize=right-mid;
-    std::vector<int> leftArr(leftArrSize);
-    std::vector<int> rightArr(rightArrSize);
+    //用临时数组存储分半后的数组
+    std::vector<T> leftArr(leftArrSize);
+    std::vector<T> rightArr(rightArrSize);
     for (int i = 0; i <leftArrSize; i++)
     {
         leftArr[i] = arr[left + i];
@@ -42,6 +48,7 @@ void mergeSort(std::vector<int> &arr, int left, int mid, int right)
     int leftIndex = 0;
     int rightIndex = 0;
     int arrIndex = left;
+    //排序这个分区的数组，并存入原数组arr
     while (leftIndex < leftArrSize && rightIndex < rightArrSize)
     {
 
@@ -70,25 +77,62 @@ void mergeSort(std::vector<int> &arr, int left, int mid, int right)
         arrIndex++;
     }
 }
-void merge(std::vector<int> &arr, int left, int right)
+//递归分区
+template<typename T>
+void mergeArr(std::vector<T> &arr, int left, int right)
 {
     if (left < right)
     {
         int mid = left + (right - left) / 2;
-        merge(arr, left, mid);
-        merge(arr, mid + 1, right);
+        mergeArr(arr, left, mid);
+        mergeArr(arr, mid + 1, right);
         mergeSort(arr, left, mid, right);
     }
 }
+
+//Insertion Sort
+template<typename T>
+void insertSort(std::vector<T> &arr)
+{
+    int n=arr.size();
+    for(int i=0;i<n;i++)
+    {
+        for(int j=0;j<i;j++)
+        {
+            if(arr[i]<=arr[j])
+            {
+                T temp=0;
+                temp=arr[j];
+                arr[j]=arr[i];
+                arr[i]=temp;
+            }
+        }
+    }
+}
+//Bad Time complexity:O(n²);
+//Good Time complexity:O(n);
+//Average Case：O(n²);
+//Space complexity:O(1);
 int main()
 {
+    #ifdef InsertSort
     std::vector<int> arr = {38, 27, 43, 3, 9, 82, 10};
-    merge(arr, 0, arr.size() - 1);
-    std::cout<<"排序后"<<std::endl;
+    insertSort(arr);
+    std::cout<<"InsertSOrt->排序后"<<std::endl;
     for (auto e : arr)
     {
         std::cout << e << " ";
     }
     std::cout<<std::endl;
+    #elif MergeSort
+    std::vector<int> arr = {38, 27, 43, 3, 9, 82, 10};
+    mergeArr(arr,0,arr.size()-1);
+    std::cout<<"MergeSort->排序后"<<std::endl;
+    for (auto e : arr)
+    {
+        std::cout << e << " ";
+    }
+    std::cout<<std::endl;
+    #endif
     return 0;
 }
