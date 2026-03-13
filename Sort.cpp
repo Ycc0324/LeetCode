@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <list>
+#include <algorithm>
 // 二分查找
 bool binarySearch(std::vector<int> &arr, int target)
 {
@@ -121,13 +122,13 @@ int paritition(std::vector<T> &arr, int low, int high)
     T pivot = arr[low];
     while (low < high)
     {
-        //From left to right, find the values bigger than the pivot value and place them in the right slot.
+        // From left to right, find the values bigger than the pivot value and place them in the right slot.
         while (low < high && arr[high] >= pivot)
         {
             high--;
         }
         arr[low] = arr[high];
-        //From right to left, find values smaller than the pivot and put them in the left slot.
+        // From right to left, find values smaller than the pivot and put them in the left slot.
         while (low < high && arr[low] <= pivot)
         {
             low++;
@@ -150,6 +151,47 @@ void quickSort(std::vector<T> &arr, int low, int high)
 // Bad Time complexity:O(n²);
 // Average Case：O(n&logn);
 // Space complexity:O(1);
+
+// Heap Sort
+
+// In data structures, there is a fixed mathematical formula to find the position of the last non-leaf node: n/2 - 1
+void heapSort(std::vector<int> &arr, int start, int end)
+{
+    int dad = start;
+    int son = dad * 2 + 1;
+    while (son <= end)
+    {
+        //Note the situation where there is only a left child and no right child.
+        if (son + 1 <= end && arr[son] < arr[son + 1])
+        {
+            son++;
+        }
+        if (arr[dad] <= arr[son])
+        {
+            std::swap(arr[dad], arr[son]);
+            dad = son;
+            son = dad * 2 + 1;
+        }
+        else
+            return;
+    }
+}
+void adjustHeap(std::vector<int> &arr)
+{
+    int n = arr.size();
+    for (int i = n / 2 - 1; i >= 0; i--)
+    {
+        heapSort(arr, i, n - 1);
+    }
+    for (int i = n - 1; i > 0; i--)
+    {
+        std::swap(arr[0], arr[i]);
+        heapSort(arr, 0, i - 1);
+    }
+}
+// Adjustment time complexity: O(n)
+// Sorting time complexity: O(logn)
+// Total time complexity: O(nlogn)
 int main()
 {
 #ifdef InsertSort
@@ -172,13 +214,24 @@ int main()
     std::cout << std::endl;
 #elif QuickSort
     std::vector<int> arr = {38, 27, 43, 3, 9, 82, 10};
-    quickSort(arr, 0,arr.size()-1);
+    quickSort(arr, 0, arr.size() - 1);
     std::cout << "quickSort->排序后" << std::endl;
     for (auto e : arr)
     {
         std::cout << e << " ";
     }
     std::cout << std::endl;
+#elif HeapSort
+    std::vector<int> arr = {38, 27, 43, 3, 9, 82, 10};
+    adjustHeap(arr);
+    std::cout << "HeapSort->排序后" << std::endl;
+    for (auto e : arr)
+    {
+        std::cout << e << " ";
+    }
+    std::cout << std::endl;
+
 #endif
+
     return 0;
 }
